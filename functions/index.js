@@ -25,7 +25,8 @@ CONEXIÓN CON EL SOFTWARE O EL USO U OTRAS REPARACIONES EN EL SOFTWARE.
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
-admin.initializeApp();
+// admin.initializeApp();
+const firebaseApp = admin.initializeApp(functions.config().firebase);
 const language = require('@google-cloud/language');
 const client = new language.LanguageServiceClient();
 
@@ -73,6 +74,47 @@ app.get('/', jmy.sesion(jmy_connect.key),async (req, res) => {
   }
 });
 
+app.get('/timeline',jmy.sesion(jmy_connect.key), async (req, res) => {
+
+ let data=context(req);
+ data=context(req,{
+    css:[ 
+    ],
+    js:[
+      {url:data.head.cdn+"assets/js/timeline.js"},
+    ]
+  });
+ 
+  data.head.title='Vista línea de tiempo';
+  data.out={ola:"ola k ace"};
+
+  res.render('linea_de_tiempo',data);
+});
+
+function getFacts(){
+  const ref = firebaseApp.database().ref('timeline');
+  return ref.once('value').then(snap => snap.val());
+}
+
+app.get('/timeline/mostrar',jmy.sesion(jmy_connect.key),async(req,res)=>{
+  res.set('Cache-Control','public, max-age=300,s-maxage=600');
+  getFacts().then(d => {
+    res.json({d});
+  });
+});
+
+
+app.post('/timeline/guardar',jmy.sesion(jmy_connect.key),async (req,res)=>{
+  try{
+    const { datos } = req.body;
+    console.log("dato",datos);
+    const ref = firebaseApp.database().ref('timeline');
+    await ref.push({datos});
+  }catch(error){
+    console.log("Error"+error);
+    res.sendStatus(500)
+  }
+});
 
 
 // Expose the API as a function
