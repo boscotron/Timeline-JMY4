@@ -116,7 +116,6 @@ app.post('/timeline/guardar',jmy.sesion(jmy_connect.key),async (req,res)=>{
   }
 });
 
-
 // Expose the API as a function
 exports.api = functions.https.onRequest(app);
 

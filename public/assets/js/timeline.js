@@ -147,7 +147,7 @@ jQuery(function($){
 		}else {
 			tipo = "Nota";
 		}
-		var cabezera = doHeader(Tipo,tipo,nameUser,"Personas");
+		var cabezera = doHeader(tipo,tipo,nameUser,"Personas");
 		var dato = $("#texto").val();
 		var datosInfo = saveData(dato,cabezera); 
 	
